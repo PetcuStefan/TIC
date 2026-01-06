@@ -1,0 +1,48 @@
+// backend/routes/orderRoutes.js
+const express = require("express");
+const router = express.Router();
+const { db } = require("../firebase");
+const { authenticateToken } = require("../auth");
+
+// Create order (logged-in users)
+router.post("/", authenticateToken, async (req, res) => {
+  try {
+    const order = req.body;
+    order.userId = req.user.id;
+    order.createdAt = new Date();
+
+    const docRef = await db.collection("orders").add(order);
+    res.json({ id: docRef.id, message: "Order created successfully" });
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Error creating order");
+  }
+});
+
+// Get all orders (admin only)
+router.get("/", authenticateToken, async (req, res) => {
+  try {
+    if (req.user.role !== "admin") return res.status(403).send("Admins only");
+
+    const snapshot = await db.collection("orders").get();
+    const orders = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    res.json(orders);
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Error fetching orders");
+  }
+});
+
+// Get my orders (logged-in user)
+router.get("/my-orders", authenticateToken, async (req, res) => {
+  try {
+    const snapshot = await db.collection("orders").where("userId", "==", req.user.id).get();
+    const orders = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    res.json(orders);
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Error fetching your orders");
+  }
+});
+
+module.exports = router;

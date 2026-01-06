@@ -1,10 +1,15 @@
-//server app
+// server.js
 const express = require('express');
 const app = express();
 const httpLogger = require('morgan');
 const cors = require('cors');
 const port = 3000;
 const { db } = require("./firebase");
+
+// Routes
+const authRoutes = require("./routes/authRoutes");
+const productRoutes = require("./routes/productRoutes");
+const orderRoutes = require("./routes/orderRoutes");
 
 app.use(httpLogger('dev'));
 app.use(cors());
@@ -14,7 +19,6 @@ app.use(express.json());
 // DB connectivity check
 async function checkDbConnection() {
   try {
-    // Try fetching one doc from "products" collection
     const snapshot = await db.collection("products").limit(1).get();
     console.log(`✅ Firestore connected! Found ${snapshot.size} products.`);
   } catch (err) {
@@ -22,28 +26,13 @@ async function checkDbConnection() {
   }
 }
 
-checkDbConnection(); // call at startup
+checkDbConnection();
 
-app.get('/', (req, res) => {
-  res.send('Hello World!');
-});
-
-app.post('/data', (req, res) => {
-  const { name, email } = req.body;
-  console.log('Posting the following data: ', name, email);
-  res.send('Success');
-});
-
-app.get('/greet', (req, res) => {
-  const name = req.query.name;
-  res.send(`Hello ${name}!`);
-});
-
-app.get('/users/:id', (req, res) => {
-  const id = req.params.id;
-  res.send(`User ID: ${id}`);
-});
+// Use routes
+app.use("/auth", authRoutes);
+app.use("/products", productRoutes);
+app.use("/orders", orderRoutes);
 
 app.listen(port, () => {
-  console.log(`Example app listening on port ${port}!`);
+  console.log(`Server running on port ${port}`);
 });

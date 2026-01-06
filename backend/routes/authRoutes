@@ -1,0 +1,66 @@
+// backend/routes/authRoutes.js
+const express = require("express");
+const router = express.Router();
+const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
+const { db } = require("../firebase");
+const { JWT_SECRET } = require("../auth");
+
+// Signup
+router.post("/signup", async (req, res) => {
+  try {
+    const { email, password, name } = req.body;
+    if (!email || !password) return res.status(400).send("Email and password required");
+
+    const usersRef = db.collection("users");
+    const snapshot = await usersRef.where("email", "==", email).get();
+    if (!snapshot.empty) return res.status(400).send("User already exists");
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    const newUser = {
+      email,
+      password: hashedPassword,
+      name: name || "",
+      role: "user",
+      createdAt: new Date()
+    };
+
+    const docRef = await usersRef.add(newUser);
+    res.json({ id: docRef.id, message: "User created successfully" });
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Error creating user");
+  }
+});
+
+// Login
+router.post("/login", async (req, res) => {
+  try {
+    const { email, password } = req.body;
+    if (!email || !password) return res.status(400).send("Email and password required");
+
+    const usersRef = db.collection("users");
+    const snapshot = await usersRef.where("email", "==", email).get();
+    if (snapshot.empty) return res.status(400).send("Invalid email or password");
+
+    const userDoc = snapshot.docs[0];
+    const user = userDoc.data();
+
+    const match = await bcrypt.compare(password, user.password);
+    if (!match) return res.status(400).send("Invalid email or password");
+
+    const token = jwt.sign(
+      { id: userDoc.id, email: user.email, role: user.role },
+      JWT_SECRET,
+      { expiresIn: "1h" }
+    );
+
+    res.json({ token, user: { id: userDoc.id, email: user.email, role: user.role } });
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Login failed");
+  }
+});
+
+module.exports = router;
