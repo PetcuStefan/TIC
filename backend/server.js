@@ -4,43 +4,46 @@ const app = express();
 const httpLogger = require('morgan');
 const cors = require('cors');
 const port = 3000;
+const { db } = require("./firebase");
 
 app.use(httpLogger('dev'));
-app.use(cors()) //see more at https://www.npmjs.com/package/cors
-app.use(express.urlencoded({ extended: false }))
-app.use(express.json()) //we expect JSON data to be sent as payloads
+app.use(cors());
+app.use(express.urlencoded({ extended: false }));
+app.use(express.json());
+
+// DB connectivity check
+async function checkDbConnection() {
+  try {
+    // Try fetching one doc from "products" collection
+    const snapshot = await db.collection("products").limit(1).get();
+    console.log(`✅ Firestore connected! Found ${snapshot.size} products.`);
+  } catch (err) {
+    console.error("❌ Firestore connection failed:", err.message);
+  }
+}
+
+checkDbConnection(); // call at startup
 
 app.get('/', (req, res) => {
-  res.send('Hello World!')
+  res.send('Hello World!');
 });
 
-// Simple post route example
 app.post('/data', (req, res) => {
-  // destructuring
-  const { name, email } = req.body; // validates keys exist
-  
-  // bad example:
-  // let data = req.body;
-  // console.log(data.name, data.email);
-  
+  const { name, email } = req.body;
   console.log('Posting the following data: ', name, email);
   res.send('Success');
 });
 
-// Query params example
 app.get('/greet', (req, res) => {
   const name = req.query.name;
   res.send(`Hello ${name}!`);
 });
-// Access: localhost:3000/greet?name=John
 
-// route params example
 app.get('/users/:id', (req, res) => {
   const id = req.params.id;
   res.send(`User ID: ${id}`);
 });
-// Access: localhost:3000/users/123
 
 app.listen(port, () => {
-  console.log(`Example app listening on port ${port}!`)
+  console.log(`Example app listening on port ${port}!`);
 });

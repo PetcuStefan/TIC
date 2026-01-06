@@ -71,4 +71,5 @@ temp/
 node_modules/
 lib/
 .env
+/backend/serviceAccountKey.json
 
