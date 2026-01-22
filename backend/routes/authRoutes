@@ -9,19 +9,18 @@ const { JWT_SECRET } = require("../auth");
 // Signup
 router.post("/signup", async (req, res) => {
   try {
-    const { email, password, name } = req.body;
-    if (!email || !password) return res.status(400).send("Email and password required");
+    const { password, username } = req.body;
+    if (!username || !password) return res.status(400).send("Username and password required");
 
     const usersRef = db.collection("users");
-    const snapshot = await usersRef.where("email", "==", email).get();
+    const snapshot = await usersRef.where("username", "==", username).get();
     if (!snapshot.empty) return res.status(400).send("User already exists");
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
     const newUser = {
-      email,
       password: hashedPassword,
-      name: name || "",
+      username: username || "",
       role: "user",
       createdAt: new Date()
     };
@@ -37,26 +36,26 @@ router.post("/signup", async (req, res) => {
 // Login
 router.post("/login", async (req, res) => {
   try {
-    const { email, password } = req.body;
-    if (!email || !password) return res.status(400).send("Email and password required");
+    const { username, password } = req.body;
+    if (!username || !password) return res.status(400).send("Username and password required");
 
     const usersRef = db.collection("users");
-    const snapshot = await usersRef.where("email", "==", email).get();
-    if (snapshot.empty) return res.status(400).send("Invalid email or password");
+    const snapshot = await usersRef.where("username", "==", username).get();
+    if (snapshot.empty) return res.status(400).send("Invalid username or password");
 
     const userDoc = snapshot.docs[0];
     const user = userDoc.data();
 
     const match = await bcrypt.compare(password, user.password);
-    if (!match) return res.status(400).send("Invalid email or password");
+    if (!match) return res.status(400).send("Invalid username or password");
 
     const token = jwt.sign(
-      { id: userDoc.id, email: user.email, role: user.role },
+      { id: userDoc.id, username: user.username, role: user.role },
       JWT_SECRET,
       { expiresIn: "1h" }
     );
 
-    res.json({ token, user: { id: userDoc.id, email: user.email, role: user.role } });
+    res.json({ token, user: { id: userDoc.id, username: user.username, role: user.role } });
   } catch (err) {
     console.error(err);
     res.status(500).send("Login failed");
