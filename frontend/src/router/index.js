@@ -2,6 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 import Home from '../views/Home.vue'
 import Login from '../views/Login.vue'
 import Register from '../views/Register.vue'
+import AddProduct from '../views/AddProduct.vue'
 
 const routes = [
   {
@@ -18,7 +19,17 @@ const routes = [
     path: '/register',
     name: 'Register',
     component: Register
+  },
+  {
+  path: '/add-product',
+  component: AddProduct,
+  beforeEnter: () => {
+    if (localStorage.getItem('role') !== 'admin') {
+      return '/';
+    }
   }
+}
+
 ]
 
 const router = createRouter({
