@@ -1,5 +1,5 @@
 <template>
-  <div class="home">
+  <div class="home-container">
     <header class="header">
       <h1>PC Parts Store</h1>
 
@@ -10,7 +10,7 @@
         </button>
 
         <button @click="logout">
-          🚪 Logout
+          Logout
         </button>
       </div>
     </header>
@@ -28,6 +28,7 @@
 import { ref, onMounted } from 'vue'
 import api from '../services/api'
 import { useRouter } from 'vue-router'
+import '../styles/home.css'
 
 const products = ref([])
 const router = useRouter()
@@ -55,24 +56,3 @@ function logout() {
 
 onMounted(loadProducts)
 </script>
-
-<style scoped>
-.home {
-  max-width: 800px;
-  margin: 0 auto;
-}
-
-.header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.actions button {
-  margin-left: 10px;
-}
-
-.products {
-  margin-top: 20px;
-}
-</style>

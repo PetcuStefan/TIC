@@ -40,13 +40,3 @@ async function register() {
   }
 }
 </script>
-
-<style scoped>
-.auth-container {
-  max-width: 400px;
-  margin: 50px auto;
-}
-.error {
-  color: red;
-}
-</style>

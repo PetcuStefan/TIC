@@ -1,5 +1,5 @@
 <template>
-  <div class="add-product">
+  <div class="add-product-container">
     <h2>Add Product</h2>
 
     <form @submit.prevent="submit">
@@ -36,6 +36,7 @@
 import { ref } from 'vue'
 import api from '../services/api'
 import { useRouter } from 'vue-router'
+import '../styles/addProduct.css'
 
 const router = useRouter()
 

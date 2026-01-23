@@ -1,0 +1,75 @@
+.home-container {
+  max-width: 800px;
+  margin: 50px auto;
+  padding: 20px;
+  background-color: #f8f8f8;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  transition: all 0.3s ease;
+}
+
+.home-container h1 {
+  text-align: center;
+  margin-bottom: 20px;
+  color: #333;
+  text-shadow: 1px 1px 2px rgba(0,0,0,0.05);
+}
+
+/* Admin / Logout buttons container */
+.home-container .actions {
+  display: flex;
+  justify-content: space-between; /* Add product left, logout right */
+  margin-bottom: 20px;
+}
+
+.home-container .actions button {
+  padding: 10px 15px;
+  border: none;
+  border-radius: 5px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+/* Add Product button green */
+.home-container .actions button:nth-child(1) {
+  background-color: #42b883;
+  color: white;
+}
+
+.home-container .actions button:nth-child(1):hover {
+  background-color: #369b6d;
+  transform: scale(1.05);
+}
+
+/* Logout button red */
+.home-container .actions button:nth-child(2) {
+  background-color: #e74c3c;
+  color: white;
+}
+
+.home-container .actions button:nth-child(2):hover {
+  background-color: #c0392b;
+  transform: scale(1.05);
+}
+
+.home-container ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+.home-container li {
+  padding: 12px 15px;
+  border-bottom: 1px solid #ccc;
+  border-radius: 5px;
+  margin-bottom: 8px;
+  background-color: #ffffff;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+  cursor: pointer;
+}
+
+.home-container li:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  background-color: #e6f5f0;
+}

@@ -21,6 +21,7 @@
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import api from '../services/api'
+import '../styles/login.css'
 
 const username = ref('')
 const password = ref('')
@@ -36,20 +37,10 @@ async function login() {
 
     localStorage.setItem('token', res.data.token)
     localStorage.setItem('role', res.data.user.role)
-    
+
     router.push('/')
   } catch (err) {
     error.value = err.response?.data || 'Login failed'
   }
 }
 </script>
-
-<style scoped>
-.auth-container {
-  max-width: 400px;
-  margin: 50px auto;
-}
-.error {
-  color: red;
-}
-</style>
