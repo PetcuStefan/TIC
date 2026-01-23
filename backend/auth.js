@@ -1,18 +1,39 @@
 const jwt = require("jsonwebtoken");
-const JWT_SECRET = process.env.JWT_SECRET || "supersecretkey";
 
+if (!process.env.JWT_SECRET) {
+  throw new Error("JWT_SECRET is not defined in environment variables");
+}
+
+const JWT_SECRET = process.env.JWT_SECRET;
+
+// Verify JWT
 function authenticateToken(req, res, next) {
   const authHeader = req.headers["authorization"];
   const token = authHeader && authHeader.split(" ")[1];
-  if (!token) return res.status(401).send("Access denied");
+
+  if (!token) {
+    return res.status(401).send("Access denied");
+  }
 
   try {
     const payload = jwt.verify(token, JWT_SECRET);
-    req.user = payload; 
+    req.user = payload; // { id, username, role }
     next();
   } catch (err) {
-    res.status(403).send("Invalid token");
+    return res.status(403).send("Invalid or expired token");
   }
 }
 
-module.exports = { authenticateToken, JWT_SECRET };
+// Admin-only guard
+function requireAdmin(req, res, next) {
+  if (req.user.role !== "admin") {
+    return res.status(403).send("Admin access required");
+  }
+  next();
+}
+
+module.exports = {
+  authenticateToken,
+  requireAdmin,
+  JWT_SECRET
+};

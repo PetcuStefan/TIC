@@ -35,6 +35,8 @@ async function login() {
     })
 
     localStorage.setItem('token', res.data.token)
+    localStorage.setItem('role', res.data.user.role)
+    
     router.push('/')
   } catch (err) {
     error.value = err.response?.data || 'Login failed'
