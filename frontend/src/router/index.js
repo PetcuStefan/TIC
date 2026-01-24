@@ -3,6 +3,8 @@ import Home from '../views/Home.vue'
 import Login from '../views/Login.vue'
 import Register from '../views/Register.vue'
 import AddProduct from '../views/AddProduct.vue'
+import ProductDetails from '../views/ProductDetails.vue'
+import Cart from '../views/Cart.vue'
 
 const routes = [
   {
@@ -28,8 +30,18 @@ const routes = [
       return '/';
     }
   }
-}
-
+},
+  {
+    path: '/products/:id',
+    name: 'ProductDetails',
+    component: ProductDetails,
+    props: true
+  },
+  {
+    path: '/cart',
+    name: 'Cart',
+    component: Cart
+  }
 ]
 
 const router = createRouter({

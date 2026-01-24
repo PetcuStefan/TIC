@@ -16,6 +16,22 @@ router.get("/", async (req, res) => {
   }
 });
 
+// Get single product by ID (public)
+router.get("/:id", async (req, res) => {
+  try {
+    const doc = await db.collection("products").doc(req.params.id).get()
+
+    if (!doc.exists) {
+      return res.status(404).send("Product not found")
+    }
+
+    res.json({ id: doc.id, ...doc.data() })
+  } catch (err) {
+    console.error(err)
+    res.status(500).send("Error fetching product")
+  }
+})
+
 // Add product (admin only)
 router.post("/", authenticateToken,requireAdmin, async (req, res) => {
   try {

@@ -3,27 +3,37 @@
     <header class="header">
       <h1>PC Parts Store</h1>
 
-      <div class="actions">
-        <!-- ADMIN ONLY -->
-        <button v-if="isAdmin" @click="goToAddProduct">
-          ➕ Add Product
-        </button>
+<div class="actions">
+  <button class="cart-btn" @click="goToCart">
+    🛒 View Cart
+  </button>
 
-        <button @click="logout">
-          Logout
-        </button>
-      </div>
+  <button @click="logout">
+    Logout
+  </button>
+
+  <!-- ADMIN ONLY -->
+  <button v-if="isAdmin" @click="goToAddProduct">
+    ➕ Add Product 
+  </button>
+</div>
+
     </header>
 
     <ul class="products">
-      <li v-for="product in products" :key="product.id">
-        <strong>{{ product.name }}</strong>
-        — ${{ product.price }}
+      <li
+        v-for="product in products"
+        :key="product.id"
+        @click="goToProduct(product.id)"
+        class="product-item"
+      >
+      <strong>{{ product.name }}</strong>
+         — ${{ product.price }}
       </li>
+
     </ul>
   </div>
 </template>
-
 <script setup>
 import { ref, onMounted } from 'vue'
 import api from '../services/api'
@@ -46,6 +56,14 @@ async function loadProducts() {
 
 function goToAddProduct() {
   router.push('/add-product')
+}
+
+function goToCart() {
+  router.push('/cart')
+}
+
+function goToProduct(id) {
+  router.push(`/products/${id}`)
 }
 
 function logout() {
