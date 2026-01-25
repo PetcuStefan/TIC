@@ -29,3 +29,27 @@ button {
 button:hover {
   background-color: #369b6d;
 }
+
+.admin-actions {
+  margin-top: 30px;
+  display: flex;
+  gap: 10px;
+}
+
+.edit-btn {
+  background-color: #f1c40f;
+  color: #333;
+}
+
+.edit-btn:hover {
+  background-color: #d4ac0d;
+}
+
+.delete-btn {
+  background-color: #e74c3c;
+  color: white;
+}
+
+.delete-btn:hover {
+  background-color: #c0392b;
+}

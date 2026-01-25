@@ -4,12 +4,12 @@
       <h1>PC Parts Store</h1>
 
 <div class="actions">
+    <button @click="logout">
+    Logout
+  </button>
+  
   <button class="cart-btn" @click="goToCart">
     🛒 View Cart
-  </button>
-
-  <button @click="logout">
-    Logout
   </button>
 
   <!-- ADMIN ONLY -->

@@ -5,62 +5,52 @@
   background-color: #f8f8f8;
   border-radius: 8px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-  transition: all 0.3s ease;
 }
 
 .add-product-container h1 {
   text-align: center;
   margin-bottom: 25px;
   color: #333;
-  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.05);
 }
 
 .add-product-container form {
   display: flex;
   flex-direction: column;
-  gap: 15px; /* spacing between inputs */
+  gap: 15px;
 }
 
+/* 🔑 CRITICAL FIX */
 .add-product-container input,
-.add-product-container select,
 .add-product-container button {
-  padding: 10px 12px;
-  border-radius: 5px;
-  border: 1px solid #ccc;
-  font-size: 16px;
+  width: 100%;
   box-sizing: border-box;
+  padding: 12px;
+  font-size: 16px;
+  border-radius: 5px;
 }
 
-.add-product-container input:focus,
-.add-product-container select:focus {
+/* Inputs */
+.add-product-container input {
+  border: 1px solid #ccc;
+}
+
+.add-product-container input:focus {
   outline: none;
   border-color: #42b883;
-  box-shadow: 0 0 5px rgba(66, 184, 131, 0.5);
+  box-shadow: 0 0 5px rgba(66, 184, 131, 0.4);
 }
 
+/* Button */
 .add-product-container button {
   background-color: #42b883;
   color: white;
   border: none;
-  cursor: pointer;
   font-weight: bold;
+  cursor: pointer;
   transition: background-color 0.3s ease, transform 0.2s ease;
 }
 
 .add-product-container button:hover {
   background-color: #369b6d;
   transform: scale(1.03);
-}
-
-/* Optional message styling */
-.add-product-container .success {
-  color: green;
-  margin-top: 10px;
-  text-align: center;
-}
-
-.add-product-container .error {
-  color: red;
-  margin-top: 10px;
-  text-align: center;
 }

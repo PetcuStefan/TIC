@@ -41,7 +41,14 @@ const routes = [
     path: '/cart',
     name: 'Cart',
     component: Cart
-  }
+  },
+  {
+  path: '/products/:id/edit',
+  name: 'EditProduct',
+  component: AddProduct,
+  meta: { requiresAdmin: true }
+}
+
 ]
 
 const router = createRouter({

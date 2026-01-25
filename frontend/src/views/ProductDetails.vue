@@ -11,8 +11,19 @@
         min="1"
       />
 
-      <button @click="addToCart">
+      <button class="add-btn" @click="addToCart">
         Add to Cart
+      </button>
+    </div>
+
+    <!-- ADMIN CONTROLS -->
+    <div v-if="isAdmin" class="admin-actions">
+      <button class="edit-btn" @click="goToEdit">
+        ✏️ Update Product
+      </button>
+
+      <button class="delete-btn" @click="deleteProduct">
+        🗑 Delete Product
       </button>
     </div>
   </div>
@@ -31,6 +42,8 @@ const router = useRouter()
 
 const product = ref(null)
 const quantity = ref(1)
+
+const isAdmin = localStorage.getItem('role') === 'admin'
 
 async function loadProduct() {
   try {
@@ -59,11 +72,25 @@ function addToCart() {
   }
 
   localStorage.setItem('cart', JSON.stringify(cart))
-
-  // Redirect back to home
   router.push('/')
 }
 
+function goToEdit() {
+  router.push(`/products/${product.value.id}/edit`)
+}
+
+async function deleteProduct() {
+  if (!confirm('Are you sure you want to delete this product?')) return
+
+  try {
+    await api.delete(`/products/${product.value.id}`)
+    alert('Product deleted')
+    router.push('/')
+  } catch (err) {
+    alert('Failed to delete product')
+    console.error(err)
+  }
+}
 
 onMounted(loadProduct)
 </script>
