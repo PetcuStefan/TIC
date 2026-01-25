@@ -1,0 +1,56 @@
+.orders-container {
+  max-width: 900px;
+  margin: 40px auto;
+  padding: 0 20px;
+}
+
+.orders-container h1 {
+  text-align: center;
+  margin-bottom: 30px;
+  color: #333;
+}
+
+/* Order card */
+.order-card {
+  background: #fff;
+  padding: 20px;
+  margin-bottom: 15px;
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+  transition: all 0.3s ease; /* smooth animation */
+  cursor: pointer;
+}
+
+.order-card:hover {
+  background-color: #e6f5f0; /* subtle greenish highlight */
+  transform: translateY(-4px); /* lift the card */
+  box-shadow: 0 8px 20px rgba(0,0,0,0.15); /* stronger shadow */
+}
+
+.order-card p {
+  margin: 6px 0;
+  color: #444;
+}
+
+.order-card p strong {
+  color: #222;
+}
+
+/* Items list */
+.order-card ul {
+  margin-top: 10px;
+  padding-left: 20px;
+}
+
+.order-card li {
+  padding: 8px 12px;
+  margin-bottom: 6px;
+  background-color: #f7f7f7;
+  border-radius: 5px;
+  font-size: 14px;
+  transition: background-color 0.3s ease;
+}
+
+.order-card li:hover {
+  background-color: #d1f0e0; /* slightly darker highlight on hover */
+}

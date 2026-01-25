@@ -12,6 +12,11 @@
     🛒 View Cart
   </button>
 
+  <button class="orders-btn" @click="goToOrders">
+  📦 View Orders
+  </button>
+
+
   <!-- ADMIN ONLY -->
   <button v-if="isAdmin" @click="goToAddProduct">
     ➕ Add Product 
@@ -64,6 +69,10 @@ function goToCart() {
 
 function goToProduct(id) {
   router.push(`/products/${id}`)
+}
+
+function goToOrders() {
+  router.push('/orders')
 }
 
 function logout() {

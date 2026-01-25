@@ -2,13 +2,14 @@
 const express = require("express");
 const router = express.Router();
 const { db } = require("../firebase");
-const { authenticateToken } = require("../auth");
+const { authenticateToken, requireAdmin } = require("../auth");
 
 // Create order (logged-in users)
 router.post("/", authenticateToken, async (req, res) => {
   try {
     const order = req.body;
     order.userId = req.user.id;
+    order.username= req.user.username;
     order.createdAt = new Date();
 
     const docRef = await db.collection("orders").add(order);
@@ -20,10 +21,8 @@ router.post("/", authenticateToken, async (req, res) => {
 });
 
 // Get all orders (admin only)
-router.get("/", authenticateToken, async (req, res) => {
+router.get("/", authenticateToken,requireAdmin, async (req, res) => {
   try {
-    if (req.user.role !== "admin") return res.status(403).send("Admins only");
-
     const snapshot = await db.collection("orders").get();
     const orders = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
     res.json(orders);

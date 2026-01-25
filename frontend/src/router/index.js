@@ -5,6 +5,7 @@ import Register from '../views/Register.vue'
 import AddProduct from '../views/AddProduct.vue'
 import ProductDetails from '../views/ProductDetails.vue'
 import Cart from '../views/Cart.vue'
+import ViewOrders from '../views/ViewOrders.vue'
 
 const routes = [
   {
@@ -47,6 +48,10 @@ const routes = [
   name: 'EditProduct',
   component: AddProduct,
   meta: { requiresAdmin: true }
+},
+{
+  path: '/orders',
+  component: ViewOrders
 }
 
 ]
