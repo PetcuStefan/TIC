@@ -7,7 +7,6 @@
     <div v-for="order in orders" :key="order.id" class="order-card">
       <p><strong>Order ID:</strong> {{ order.id }}</p>
 
-      <!-- ADMIN ONLY: show who placed the order -->
       <p v-if="isAdmin">
         <strong>User:</strong> {{ order.username }}
       </p>

@@ -19,11 +19,11 @@
     <!-- ADMIN CONTROLS -->
     <div v-if="isAdmin" class="admin-actions">
       <button class="edit-btn" @click="goToEdit">
-        ✏️ Update Product
+        Update Product
       </button>
 
       <button class="delete-btn" @click="deleteProduct">
-        🗑 Delete Product
+        Delete Product
       </button>
     </div>
   </div>

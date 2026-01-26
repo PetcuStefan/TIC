@@ -19,7 +19,6 @@
   gap: 15px;
 }
 
-/* 🔑 CRITICAL FIX */
 .add-product-container input,
 .add-product-container button {
   width: 100%;
@@ -29,7 +28,6 @@
   border-radius: 5px;
 }
 
-/* Inputs */
 .add-product-container input {
   border: 1px solid #ccc;
 }
@@ -40,7 +38,6 @@
   box-shadow: 0 0 5px rgba(66, 184, 131, 0.4);
 }
 
-/* Button */
 .add-product-container button {
   background-color: #42b883;
   color: white;

@@ -14,16 +14,16 @@
 .auth-container form {
   display: flex;
   flex-direction: column;
-  gap: 10px; /* adds spacing between fields and button */
+  gap: 10px;
 }
 
 .auth-container input,
 .auth-container button {
-  width: 100%; /* full width */
+  width: 100%;
   padding: 10px;
   border-radius: 5px;
   border: 1px solid #ccc;
-  box-sizing: border-box; /* ensures padding doesn't break width */
+  box-sizing: border-box; 
 }
 
 .auth-container button {
@@ -37,7 +37,7 @@
 
 .auth-container button:hover {
   background-color: #369b6d;
-  transform: scale(1.02); /* subtle hover effect */
+  transform: scale(1.02);
 }
 
 .error {

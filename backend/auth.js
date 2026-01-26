@@ -6,7 +6,6 @@ if (!process.env.JWT_SECRET) {
 
 const JWT_SECRET = process.env.JWT_SECRET;
 
-// Verify JWT
 function authenticateToken(req, res, next) {
   const authHeader = req.headers["authorization"];
   const token = authHeader && authHeader.split(" ")[1];
@@ -17,14 +16,13 @@ function authenticateToken(req, res, next) {
 
   try {
     const payload = jwt.verify(token, JWT_SECRET);
-    req.user = payload; // { id, username, role }
+    req.user = payload;
     next();
   } catch (err) {
     return res.status(403).send("Invalid or expired token");
   }
 }
 
-// Admin-only guard
 function requireAdmin(req, res, next) {
   if (req.user.role !== "admin") {
     return res.status(403).send("Admin access required");

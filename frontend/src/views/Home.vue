@@ -9,17 +9,15 @@
   </button>
   
   <button class="cart-btn" @click="goToCart">
-    🛒 View Cart
+    View Cart
   </button>
 
   <button class="orders-btn" @click="goToOrders">
-  📦 View Orders
+  View Orders
   </button>
 
-
-  <!-- ADMIN ONLY -->
   <button v-if="isAdmin" @click="goToAddProduct">
-    ➕ Add Product 
+    Add Product 
   </button>
 </div>
 
