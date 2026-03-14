@@ -3,16 +3,17 @@ const router = express.Router();
 const { db } = require("../firebase");
 const { authenticateToken, requireAdmin } = require("../auth");
 
+// PLACE ORDER AND UPDATE STOCK
 router.post("/", authenticateToken, async (req, res) => {
   try {
     const order = req.body;
     order.userId = req.user.id;
     order.username = req.user.username;
-    order.createdAt = new Date();
+    order.createdAt = new Date(); // JS Date
 
-    const batch = db.batch(); // Use a batch to update multiple products safely
+    const batch = db.batch(); // batch to update multiple products
 
-    // Loop through each product in the order
+    // Update stock for each product in the order
     for (const item of order.items) {
       const productRef = db.collection("products").doc(item.id);
       const productDoc = await productRef.get();
@@ -35,20 +36,35 @@ router.post("/", authenticateToken, async (req, res) => {
     const orderRef = db.collection("orders").doc();
     batch.set(orderRef, order);
 
-    // Commit all changes in one go
+    // Commit all changes
     await batch.commit();
 
-    res.json({ id: orderRef.id, message: "Order created successfully and stock updated" });
+    res.json({
+      id: orderRef.id,
+      message: "Order created successfully and stock updated",
+      createdAt: order.createdAt
+    });
   } catch (err) {
     console.error(err);
     res.status(500).send("Error creating order");
   }
 });
 
-router.get("/", authenticateToken,requireAdmin, async (req, res) => {
+// GET ALL ORDERS (ADMIN ONLY)
+router.get("/", authenticateToken, requireAdmin, async (req, res) => {
   try {
     const snapshot = await db.collection("orders").get();
-    const orders = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    const orders = snapshot.docs.map(doc => {
+      const data = doc.data();
+
+      // Convert Firestore timestamp to JS Date if needed
+      if (data.createdAt && data.createdAt.toDate) {
+        data.createdAt = data.createdAt.toDate();
+      }
+
+      return { id: doc.id, ...data };
+    });
+
     res.json(orders);
   } catch (err) {
     console.error(err);
@@ -56,10 +72,25 @@ router.get("/", authenticateToken,requireAdmin, async (req, res) => {
   }
 });
 
+// GET ORDERS FOR LOGGED-IN USER
 router.get("/my-orders", authenticateToken, async (req, res) => {
   try {
-    const snapshot = await db.collection("orders").where("userId", "==", req.user.id).get();
-    const orders = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    const snapshot = await db
+      .collection("orders")
+      .where("userId", "==", req.user.id)
+      .get();
+
+    const orders = snapshot.docs.map(doc => {
+      const data = doc.data();
+
+      // Convert Firestore timestamp to JS Date if needed
+      if (data.createdAt && data.createdAt.toDate) {
+        data.createdAt = data.createdAt.toDate();
+      }
+
+      return { id: doc.id, ...data };
+    });
+
     res.json(orders);
   } catch (err) {
     console.error(err);
