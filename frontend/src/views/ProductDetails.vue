@@ -120,6 +120,9 @@ function addToCart() {
 
   localStorage.setItem('cart', JSON.stringify(cart))
   alert('Added to cart')
+
+  // Redirect to homepage automatically
+  router.push('/')
 }
 
 function goToEdit() {

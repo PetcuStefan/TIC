@@ -47,14 +47,15 @@ function getImageUrl(imagePath) {
   return `${import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000'}${imagePath}`
 }
 
-// Load products (all or filtered by category)
+// Load products (all or filtered by category) and filter out out-of-stock
 async function loadProducts() {
   try {
     const url = selectedCategory.value
       ? `/products/category/${selectedCategory.value}`
       : '/products'
     const res = await api.get(url)
-    products.value = res.data
+    // Filter out products with 0 stock
+    products.value = res.data.filter(p => p.stock > 0)
   } catch (err) {
     console.error('Failed to load products', err)
   }

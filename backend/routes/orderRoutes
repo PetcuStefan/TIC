@@ -7,11 +7,38 @@ router.post("/", authenticateToken, async (req, res) => {
   try {
     const order = req.body;
     order.userId = req.user.id;
-    order.username= req.user.username;
+    order.username = req.user.username;
     order.createdAt = new Date();
 
-    const docRef = await db.collection("orders").add(order);
-    res.json({ id: docRef.id, message: "Order created successfully" });
+    const batch = db.batch(); // Use a batch to update multiple products safely
+
+    // Loop through each product in the order
+    for (const item of order.items) {
+      const productRef = db.collection("products").doc(item.id);
+      const productDoc = await productRef.get();
+
+      if (!productDoc.exists) {
+        return res.status(400).send(`Product ${item.name} not found`);
+      }
+
+      const currentStock = productDoc.data().stock || 0;
+      const newStock = currentStock - item.quantity;
+
+      if (newStock < 0) {
+        return res.status(400).send(`Not enough stock for product ${item.name}`);
+      }
+
+      batch.update(productRef, { stock: newStock });
+    }
+
+    // Save the order
+    const orderRef = db.collection("orders").doc();
+    batch.set(orderRef, order);
+
+    // Commit all changes in one go
+    await batch.commit();
+
+    res.json({ id: orderRef.id, message: "Order created successfully and stock updated" });
   } catch (err) {
     console.error(err);
     res.status(500).send("Error creating order");
