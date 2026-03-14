@@ -1,28 +1,35 @@
 const express = require("express");
 const router = express.Router();
 const { db } = require("../firebase");
+const path = require("path");
+const fs = require("fs");
 
-const path = require("path")
-const fs = require("fs")
+// Compute project root
+const ROOT_DIR = path.join(__dirname, ".."); // one level up from routes folder
+const UPLOADS_DIR = path.join(ROOT_DIR, "uploads");
+
+// ensure uploads folder exists at root
+if (!fs.existsSync(UPLOADS_DIR)) fs.mkdirSync(UPLOADS_DIR, { recursive: true });
 
 router.post("/upload", (req, res) => {
-  if (!req.files || !req.files.file) return res.status(400).send("No file uploaded")
+  if (!req.files || !req.files.file) return res.status(400).send("No file uploaded");
 
-  const file = req.files.file
-  const allowed = ["image/jpeg","image/png","image/webp","image/avif"]
-  if (!allowed.includes(file.mimetype)) return res.status(400).send("Unsupported file type")
+  const file = req.files.file;
+  const allowed = ["image/jpeg", "image/png", "image/webp", "image/avif"];
+  if (!allowed.includes(file.mimetype)) return res.status(400).send("Unsupported file type");
 
-  const ext = path.extname(file.name)
-  const name = path.basename(file.name, ext)
-  const filename = `${name}-${Date.now()}${ext}`
+  const ext = path.extname(file.name);
+  const name = path.basename(file.name, ext);
+  const filename = `${name}-${Date.now()}${ext}`;
 
-  const uploadPath = path.join(__dirname, "uploads", filename)
-  if (!fs.existsSync(path.dirname(uploadPath))) fs.mkdirSync(path.dirname(uploadPath), { recursive: true })
+  // Save file to uploads folder at root
+  const uploadPath = path.join(UPLOADS_DIR, filename);
 
-  file.mv(uploadPath, err => {
-    if (err) return res.status(500).send(err)
-    res.json({ url: `/uploads/${filename}` })
-  })
-})
+  file.mv(uploadPath, (err) => {
+    if (err) return res.status(500).send(err);
+    // Return URL relative to static route
+    res.json({ url: `/uploads/${filename}` });
+  });
+});
 
-module.exports = router
+module.exports = router;
