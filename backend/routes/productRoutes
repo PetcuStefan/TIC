@@ -140,4 +140,25 @@ router.delete("/:id", authenticateToken, requireAdmin, async (req, res) => {
   }
 })
 
+router.get("/category/:category", async (req, res) => {
+  try {
+    const snapshot = await db.collection("products")
+      .where("category", "==", req.params.category)
+      .get()
+
+    const products = snapshot.docs.map(doc => {
+      const data = doc.data()
+      const discountedPrice = data.discount
+        ? data.price - (data.price * data.discount) / 100
+        : data.price
+      return { id: doc.id, ...data, discountedPrice }
+    })
+
+    res.json(products)
+  } catch (err) {
+    console.error(err)
+    res.status(500).send("Error fetching category products")
+  }
+})
+
 module.exports = router
