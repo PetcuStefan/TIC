@@ -1,23 +1,62 @@
 <template>
   <div v-if="product" class="product-details">
+
     <h1>{{ product.name }}</h1>
-    <p><strong>Price:</strong> ${{ product.price }}</p>
-    <p><strong>Category:</strong> {{ product.category?.name || product.category }}</p>
+
+    <img
+      v-if="product.image"
+      :src="product.image"
+      class="product-image"
+    />
+
+    <p>{{ product.description }}</p>
+
+    <p>
+      <strong>Category:</strong>
+      {{ product.category }}
+    </p>
+
+    <p>
+      <strong>Stock:</strong>
+      {{ product.stock }}
+    </p>
+
+    <p v-if="product.discount">
+      <strong>Price:</strong>
+      <span class="old-price">${{ product.price }}</span>
+      <span class="discounted-price">
+        ${{ product.discountedPrice }}
+      </span>
+      ({{ product.discount }}% off)
+    </p>
+
+    <p v-else>
+      <strong>Price:</strong> ${{ product.price }}
+    </p>
 
     <div class="actions">
+
       <input
         type="number"
         v-model.number="quantity"
         min="1"
+        :max="product.stock"
       />
 
-      <button class="add-btn" @click="addToCart">
-        Add to Cart
+      <button
+        class="add-btn"
+        @click="addToCart"
+        :disabled="product.stock === 0"
+      >
+        {{ product.stock === 0 ? 'Out of stock' : 'Add to Cart' }}
       </button>
+
     </div>
 
     <!-- ADMIN CONTROLS -->
+
     <div v-if="isAdmin" class="admin-actions">
+
       <button class="edit-btn" @click="goToEdit">
         Update Product
       </button>
@@ -25,7 +64,9 @@
       <button class="delete-btn" @click="deleteProduct">
         Delete Product
       </button>
+
     </div>
+
   </div>
 
   <p v-else>Loading product...</p>
@@ -46,33 +87,53 @@ const quantity = ref(1)
 const isAdmin = localStorage.getItem('role') === 'admin'
 
 async function loadProduct() {
+
   try {
+
     const res = await api.get(`/products/${route.params.id}`)
     product.value = res.data
+
   } catch (err) {
+
     console.error('Failed to load product', err)
     router.push('/')
+
   }
+
 }
 
 function addToCart() {
+
+  if (quantity.value > product.value.stock) {
+    alert('Not enough stock')
+    return
+  }
+
   const cart = JSON.parse(localStorage.getItem('cart')) || []
 
   const existing = cart.find(item => item.id === product.value.id)
 
+  const price = product.value.discountedPrice || product.value.price
+
   if (existing) {
+
     existing.quantity += quantity.value
+
   } else {
+
     cart.push({
       id: product.value.id,
       name: product.value.name,
-      price: product.value.price,
+      price: price,
       quantity: quantity.value
     })
+
   }
 
   localStorage.setItem('cart', JSON.stringify(cart))
-  router.push('/')
+
+  alert('Added to cart')
+
 }
 
 function goToEdit() {
@@ -80,16 +141,23 @@ function goToEdit() {
 }
 
 async function deleteProduct() {
+
   if (!confirm('Are you sure you want to delete this product?')) return
 
   try {
+
     await api.delete(`/products/${product.value.id}`)
     alert('Product deleted')
+
     router.push('/')
+
   } catch (err) {
+
     alert('Failed to delete product')
     console.error(err)
+
   }
+
 }
 
 onMounted(loadProduct)

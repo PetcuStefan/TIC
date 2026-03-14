@@ -1,19 +1,58 @@
 const express = require("express");
 const router = express.Router();
 const { db } = require("../firebase");
-const { authenticateToken,requireAdmin } = require("../auth");
+const { authenticateToken, requireAdmin } = require("../auth");
 
+// GET ALL PRODUCTS
 router.get("/", async (req, res) => {
   try {
     const snapshot = await db.collection("products").get();
-    const products = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-    res.json(products);
-  } catch (err) {
-    console.error(err);
-    res.status(500).send("Error fetching products");
-  }
-});
 
+    const products = snapshot.docs.map(doc => {
+      const data = doc.data()
+
+      const discountedPrice = data.discount
+        ? data.price - (data.price * data.discount) / 100
+        : data.price
+
+      return {
+        id: doc.id,
+        ...data,
+        discountedPrice
+      }
+    })
+
+    res.json(products)
+
+  } catch (err) {
+    console.error(err)
+    res.status(500).send("Error fetching products")
+  }
+})
+
+
+// GET PRODUCTS BY CATEGORY
+router.get("/category/:category", async (req, res) => {
+  try {
+    const snapshot = await db.collection("products")
+      .where("category", "==", req.params.category)
+      .get()
+
+    const products = snapshot.docs.map(doc => ({
+      id: doc.id,
+      ...doc.data()
+    }))
+
+    res.json(products)
+
+  } catch (err) {
+    console.error(err)
+    res.status(500).send("Error fetching category products")
+  }
+})
+
+
+// GET PRODUCT BY ID
 router.get("/:id", async (req, res) => {
   try {
     const doc = await db.collection("products").doc(req.params.id).get()
@@ -22,46 +61,101 @@ router.get("/:id", async (req, res) => {
       return res.status(404).send("Product not found")
     }
 
-    res.json({ id: doc.id, ...doc.data() })
+    const product = doc.data()
+
+    const discountedPrice = product.discount
+      ? product.price - (product.price * product.discount) / 100
+      : product.price
+
+    res.json({
+      id: doc.id,
+      ...product,
+      discountedPrice
+    })
+
   } catch (err) {
     console.error(err)
     res.status(500).send("Error fetching product")
   }
 })
 
-router.post("/", authenticateToken,requireAdmin, async (req, res) => {
+
+// ADD PRODUCT (ADMIN)
+router.post("/", authenticateToken, requireAdmin, async (req, res) => {
   try {
-    const product = req.body;
-    const docRef = await db.collection("products").add(product);
-    res.json({ id: docRef.id, message: "Product added successfully" });
-  } catch (err) {
-    console.error(err);
-    res.status(500).send("Error adding product");
-  }
-});
+    const {
+      name,
+      price,
+      category,
+      description,
+      image,
+      stock,
+      discount
+    } = req.body
 
-router.put("/:id", authenticateToken,requireAdmin, async (req, res) => {
+    if (!name || !price || !category) {
+      return res.status(400).send("Name, price and category required")
+    }
+
+    const product = {
+      name,
+      price,
+      category,
+      description: description || "",
+      image: image || "",
+      stock: stock || 0,
+      discount: discount || 0,
+      createdAt: new Date()
+    }
+
+    const docRef = await db.collection("products").add(product)
+
+    res.json({
+      id: docRef.id,
+      message: "Product added successfully"
+    })
+
+  } catch (err) {
+    console.error(err)
+    res.status(500).send("Error adding product")
+  }
+})
+
+
+// UPDATE PRODUCT (ADMIN)
+router.put("/:id", authenticateToken, requireAdmin, async (req, res) => {
   try {
-    const productId = req.params.id;
-    const data = req.body;
+    const productId = req.params.id
+    const data = req.body
 
-    await db.collection("products").doc(productId).update(data);
-    res.send("Product updated successfully");
+    if (data.stock && data.stock < 0) {
+      return res.status(400).send("Stock cannot be negative")
+    }
+
+    await db.collection("products").doc(productId).update(data)
+
+    res.send("Product updated successfully")
+
   } catch (err) {
-    console.error(err);
-    res.status(500).send("Error updating product");
+    console.error(err)
+    res.status(500).send("Error updating product")
   }
-});
+})
 
-router.delete("/:id", authenticateToken, requireAdmin,async (req, res) => {
+
+// DELETE PRODUCT (ADMIN)
+router.delete("/:id", authenticateToken, requireAdmin, async (req, res) => {
   try {
-    const productId = req.params.id;
-    await db.collection("products").doc(productId).delete();
-    res.send("Product deleted successfully");
-  } catch (err) {
-    console.error(err);
-    res.status(500).send("Error deleting product");
-  }
-});
+    const productId = req.params.id
 
-module.exports = router;
+    await db.collection("products").doc(productId).delete()
+
+    res.send("Product deleted successfully")
+
+  } catch (err) {
+    console.error(err)
+    res.status(500).send("Error deleting product")
+  }
+})
+
+module.exports = router

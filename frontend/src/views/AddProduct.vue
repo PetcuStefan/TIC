@@ -3,6 +3,7 @@
     <h1>{{ isEditMode ? 'Edit Product' : 'Add Product' }}</h1>
 
     <form @submit.prevent="submit">
+
       <input
         v-model="product.name"
         placeholder="Product name"
@@ -22,9 +23,34 @@
         required
       />
 
+      <textarea
+        v-model="product.description"
+        placeholder="Description"
+      ></textarea>
+
+      <input
+        v-model="product.image"
+        placeholder="Image URL"
+      />
+
+      <input
+        v-model.number="product.stock"
+        type="number"
+        placeholder="Stock quantity"
+      />
+
+      <input
+        v-model.number="product.discount"
+        type="number"
+        placeholder="Discount (%)"
+        min="0"
+        max="100"
+      />
+
       <button type="submit">
         {{ isEditMode ? 'Update Product' : 'Add Product' }}
       </button>
+
     </form>
   </div>
 </template>
@@ -40,43 +66,68 @@ const router = useRouter()
 
 const product = ref({
   name: '',
-  price: '',
-  category: ''
+  price: 0,
+  category: '',
+  description: '',
+  image: '',
+  stock: 0,
+  discount: 0
 })
 
 const isEditMode = computed(() => !!route.params.id)
 
 async function loadProduct() {
+
   if (!isEditMode.value) return
 
   try {
+
     const res = await api.get(`/products/${route.params.id}`)
+
     product.value = {
       name: res.data.name,
       price: res.data.price,
-      category: res.data.category?.name || res.data.category
+      category: res.data.category,
+      description: res.data.description || '',
+      image: res.data.image || '',
+      stock: res.data.stock || 0,
+      discount: res.data.discount || 0
     }
+
   } catch (err) {
+
     console.error(err)
     router.push('/')
+
   }
+
 }
 
 async function submit() {
+
   try {
+
     if (isEditMode.value) {
+
       await api.put(`/products/${route.params.id}`, product.value)
       alert('Product updated')
+
     } else {
+
       await api.post('/products', product.value)
       alert('Product added')
+
     }
 
     router.push('/')
+
   } catch (err) {
+
     alert('Operation failed')
     console.error(err)
+
   }
+
 }
 
 onMounted(loadProduct)
