@@ -6,6 +6,8 @@ import AddProduct from '../views/AddProduct.vue'
 import ProductDetails from '../views/ProductDetails.vue'
 import Cart from '../views/Cart.vue'
 import ViewOrders from '../views/ViewOrders.vue'
+import SuccessPage from '../views/SuccessPage.vue'
+import PaymentFailed from '../views/PaymentFailed.vue'
 
 const routes = [
   {
@@ -52,7 +54,17 @@ const routes = [
 {
   path: '/orders',
   component: ViewOrders
-}
+},
+  {
+    path: '/success',
+    name: 'Success',
+    component: SuccessPage
+  },
+  {
+    path: '/payment-failed',
+    name: 'PaymentFailed',
+    component: PaymentFailed
+  }
 
 ]
 

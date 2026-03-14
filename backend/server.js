@@ -13,6 +13,7 @@ const authRoutes = require("./routes/authRoutes");
 const productRoutes = require("./routes/productRoutes");
 const orderRoutes = require("./routes/orderRoutes");
 const uploadRoutes = require("./routes/uploadRoutes");
+const paymentRoutes = require("./routes/paymentRoutes");
 
 app.use(httpLogger('dev'));
 app.use(cors());
@@ -46,6 +47,7 @@ app.use("/auth", authRoutes);
 app.use("/products", productRoutes);
 app.use("/orders", orderRoutes);
 app.use("/", uploadRoutes);
+app.use("/payment",paymentRoutes);
 
 app.listen(port, () => {
   console.log(`Server running on port ${port}`);

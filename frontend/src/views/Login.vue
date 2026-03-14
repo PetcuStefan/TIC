@@ -35,8 +35,13 @@ async function login() {
       password: password.value
     })
 
+    // Save token and role (already done)
     localStorage.setItem('token', res.data.token)
     localStorage.setItem('role', res.data.user.role)
+
+    // ⚡ Save userId and username for order confirmation
+    localStorage.setItem('userId', res.data.user.id)
+    localStorage.setItem('username', res.data.user.username)
 
     router.push('/')
   } catch (err) {

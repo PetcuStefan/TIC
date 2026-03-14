@@ -1,0 +1,100 @@
+const express = require('express')
+const router = express.Router()
+const Stripe = require('stripe')
+const stripe = Stripe(process.env.STRIPE_SECRET_KEY)
+const { db } = require('../firebase')
+
+// 1️⃣ Create Stripe Checkout session
+router.post('/checkout', async (req, res) => {
+  try {
+    const { items, userId, username } = req.body
+    if (!items || !items.length || !userId || !username) {
+      return res.status(400).send('Invalid request')
+    }
+
+    // Save cart items + user info in metadata
+    const metadata = {
+      items: JSON.stringify(items),
+      userId,
+      username
+    }
+
+    const line_items = items.map(item => ({
+      price_data: {
+        currency: 'usd',
+        product_data: { name: item.name },
+        unit_amount: Math.round(item.price * 100)
+      },
+      quantity: item.quantity
+    }))
+
+    const session = await stripe.checkout.sessions.create({
+      payment_method_types: ['card'],
+      mode: 'payment',
+      line_items,
+      metadata,
+      success_url: `${process.env.CLIENT_URL || 'http://localhost:5173'}/success?session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${process.env.CLIENT_URL || 'http://localhost:5173'}/cart`
+    })
+
+    res.json({ url: session.url, sessionId: session.id })
+  } catch (err) {
+    console.error(err)
+    res.status(500).send('Stripe checkout session failed')
+  }
+})
+
+// 2️⃣ Confirm payment and create order + update stock
+router.post('/confirm', async (req, res) => {
+  try {
+    const { sessionId } = req.body
+    if (!sessionId) return res.status(400).send('No session ID provided')
+
+    // Retrieve session from Stripe
+    const session = await stripe.checkout.sessions.retrieve(sessionId)
+
+    if (session.payment_status !== 'paid') {
+      return res.status(400).send('Payment not completed')
+    }
+
+    // Read user and cart from metadata
+    const items = session.metadata ? JSON.parse(session.metadata.items) : []
+    const userId = session.metadata.userId
+    const username = session.metadata.username
+
+    if (!userId || !username) {
+      return res.status(400).send('Missing user info in metadata')
+    }
+
+    // Update stock and save order
+    const batch = db.batch()
+    for (const item of items) {
+      const productRef = db.collection('products').doc(item.id)
+      const productDoc = await productRef.get()
+      if (!productDoc.exists) continue
+
+      const currentStock = productDoc.data().stock || 0
+      const newStock = currentStock - item.quantity
+      batch.update(productRef, { stock: newStock })
+    }
+
+    const orderRef = db.collection('orders').doc()
+    batch.set(orderRef, {
+      items,
+      total: session.amount_total / 100,
+      userId,
+      username,
+      createdAt: new Date(),
+      paymentStatus: 'paid'
+    })
+
+    await batch.commit()
+
+    res.json({ message: 'Order created successfully!', orderId: orderRef.id })
+  } catch (err) {
+    console.error(err)
+    res.status(500).send('Failed to confirm payment')
+  }
+})
+
+module.exports = router
