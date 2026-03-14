@@ -25,7 +25,6 @@
 
     <p v-if="product.discount">
       <strong>Price:</strong>
-      <span class="old-price">${{ product.price }}</span>
       <span class="discounted-price">${{ product.discountedPrice }}</span>
       ({{ product.discount }}% off)
     </p>
