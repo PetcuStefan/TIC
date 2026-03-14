@@ -18,11 +18,10 @@
         required
       />
 
-      <input
-        v-model="product.category"
-        placeholder="Category"
-        required
-      />
+      <select v-model="product.category" required>
+        <option disabled value="">Select a category</option>
+        <option v-for="cat in categories" :key="cat" :value="cat">{{ cat }}</option>
+      </select>
 
       <textarea
         v-model="product.description"
@@ -64,6 +63,7 @@
 import { ref, onMounted, computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import api from '../services/api'
+import {categories} from '../categories'
 
 const route = useRoute()
 const router = useRouter()
