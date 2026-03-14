@@ -83,6 +83,7 @@ router.get("/:id", async (req, res) => {
 // ADD PRODUCT (ADMIN)
 router.post("/", authenticateToken, requireAdmin, async (req, res) => {
   try {
+
     const {
       name,
       price,
@@ -92,10 +93,6 @@ router.post("/", authenticateToken, requireAdmin, async (req, res) => {
       stock,
       discount
     } = req.body
-
-    if (!name || !price || !category) {
-      return res.status(400).send("Name, price and category required")
-    }
 
     const product = {
       name,
@@ -120,7 +117,6 @@ router.post("/", authenticateToken, requireAdmin, async (req, res) => {
     res.status(500).send("Error adding product")
   }
 })
-
 
 // UPDATE PRODUCT (ADMIN)
 router.put("/:id", authenticateToken, requireAdmin, async (req, res) => {

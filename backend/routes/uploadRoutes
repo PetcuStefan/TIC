@@ -1,0 +1,28 @@
+const express = require("express");
+const router = express.Router();
+const { db } = require("../firebase");
+
+const path = require("path")
+const fs = require("fs")
+
+router.post("/upload", (req, res) => {
+  if (!req.files || !req.files.file) return res.status(400).send("No file uploaded")
+
+  const file = req.files.file
+  const allowed = ["image/jpeg","image/png","image/webp","image/avif"]
+  if (!allowed.includes(file.mimetype)) return res.status(400).send("Unsupported file type")
+
+  const ext = path.extname(file.name)
+  const name = path.basename(file.name, ext)
+  const filename = `${name}-${Date.now()}${ext}`
+
+  const uploadPath = path.join(__dirname, "uploads", filename)
+  if (!fs.existsSync(path.dirname(uploadPath))) fs.mkdirSync(path.dirname(uploadPath), { recursive: true })
+
+  file.mv(uploadPath, err => {
+    if (err) return res.status(500).send(err)
+    res.json({ url: `/uploads/${filename}` })
+  })
+})
+
+module.exports = router
