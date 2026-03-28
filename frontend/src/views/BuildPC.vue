@@ -6,31 +6,41 @@
       <label>CPU</label>
       <select v-model="selected.cpu">
         <option disabled value="">Select CPU</option>
-        <option v-for="p in cpus" :key="p.id" :value="p">{{ p.name }} - ${{ p.price }}</option>
+        <option v-for="p in cpus" :key="p.id" :value="p">
+          {{ p.name }} - ${{ p.price }}
+        </option>
       </select>
 
       <label>Motherboard</label>
       <select v-model="selected.motherboard">
         <option disabled value="">Select Motherboard</option>
-        <option v-for="p in filteredMotherboards" :key="p.id" :value="p">{{ p.name }} - ${{ p.price }}</option>
+        <option v-for="p in filteredMotherboards" :key="p.id" :value="p">
+          {{ p.name }} - ${{ p.price }}
+        </option>
       </select>
 
       <label>RAM</label>
       <select v-model="selected.ram">
         <option disabled value="">Select RAM</option>
-        <option v-for="p in filteredRams" :key="p.id" :value="p">{{ p.name }} - ${{ p.price }}</option>
+        <option v-for="p in filteredRams" :key="p.id" :value="p">
+          {{ p.name }} - ${{ p.price }}
+        </option>
       </select>
 
       <label>GPU</label>
       <select v-model="selected.gpu">
         <option disabled value="">Select GPU</option>
-        <option v-for="p in gpus" :key="p.id" :value="p">{{ p.name }} - ${{ p.price }}</option>
+        <option v-for="p in gpus" :key="p.id" :value="p">
+          {{ p.name }} - ${{ p.price }}
+        </option>
       </select>
 
       <label>PSU</label>
       <select v-model="selected.psu">
         <option disabled value="">Select PSU</option>
-        <option v-for="p in filteredPsus" :key="p.id" :value="p">{{ p.name }} - ${{ p.price }}</option>
+        <option v-for="p in filteredPsus" :key="p.id" :value="p">
+          {{ p.name }} - ${{ p.price }}
+        </option>
       </select>
     </div>
 
@@ -44,7 +54,10 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue'
+import { useRouter } from 'vue-router'  // ✅ Import useRouter correctly
 import api from '../services/api'
+
+const router = useRouter()
 
 const products = ref([])
 
@@ -59,12 +72,14 @@ async function loadProducts() {
 
 onMounted(loadProducts)
 
+// Filtered lists by category
 const cpus = computed(() => products.value.filter(p => p.category === 'CPU'))
 const motherboards = computed(() => products.value.filter(p => p.category === 'Motherboard'))
 const rams = computed(() => products.value.filter(p => p.category === 'RAM'))
 const gpus = computed(() => products.value.filter(p => p.category === 'GPU'))
 const psus = computed(() => products.value.filter(p => p.category === 'PSU'))
 
+// Selected components
 const selected = ref({
   cpu: null,
   motherboard: null,
@@ -73,6 +88,7 @@ const selected = ref({
   psu: null
 })
 
+// Compatibility filters
 const filteredMotherboards = computed(() => {
   if (!selected.value.cpu) return motherboards.value
   return motherboards.value.filter(mb => mb.socket === selected.value.cpu.socket)
@@ -88,6 +104,7 @@ const filteredPsus = computed(() => {
   return psus.value.filter(psu => psu.wattage >= powerNeeded)
 })
 
+// Total price
 const totalPrice = computed(() => {
   return (selected.value.cpu?.price || 0) +
          (selected.value.motherboard?.price || 0) +
@@ -96,6 +113,7 @@ const totalPrice = computed(() => {
          (selected.value.psu?.price || 0)
 })
 
+// Can add to cart if all components selected
 const canAddToCart = computed(() => {
   return selected.value.cpu && selected.value.motherboard && selected.value.ram &&
          selected.value.gpu && selected.value.psu
@@ -128,6 +146,9 @@ function addToCart() {
 
   localStorage.setItem('cart', JSON.stringify(cart))
   alert('Selected components added to cart!')
+
+  // Redirect to homepage
+  router.push('/')
 }
 </script>
 
