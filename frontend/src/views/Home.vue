@@ -9,6 +9,7 @@
       </select>
 
       <button @click="logout">Logout</button>
+      <button @click="goToBuildPC">Build a PC</button>
       <button class="cart-btn" @click="goToCart">View Cart</button>
       <button class="orders-btn" @click="goToOrders">View Orders</button>
       <button v-if="isAdmin" @click="goToAddProduct">Add Product</button>
@@ -62,6 +63,7 @@ async function loadProducts() {
 }
 
 // Navigation & actions
+function goToBuildPC() {router.push('/build-pc')}
 function goToAddProduct() { router.push('/add-product') }
 function goToCart() { router.push('/cart') }
 function goToProduct(id) { router.push(`/products/${id}`) }

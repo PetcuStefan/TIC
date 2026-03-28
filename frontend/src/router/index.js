@@ -8,6 +8,7 @@ import Cart from '../views/Cart.vue'
 import ViewOrders from '../views/ViewOrders.vue'
 import SuccessPage from '../views/SuccessPage.vue'
 import PaymentFailed from '../views/PaymentFailed.vue'
+import BuildPC from '../views/BuildPC.vue'
 
 const routes = [
   {
@@ -64,6 +65,11 @@ const routes = [
     path: '/payment-failed',
     name: 'PaymentFailed',
     component: PaymentFailed
+  },
+  {
+    path: '/build-pc',
+    name: 'BuildPC',
+    component: BuildPC
   }
 
 ]
