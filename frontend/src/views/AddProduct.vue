@@ -50,6 +50,23 @@
         <img :src="previewUrl" class="preview" />
       </div>
 
+      <!-- EXTRA SPECIFICATIONS -->
+      <div v-if="product.category === 'CPU' || product.category === 'Motherboard'">
+        <input v-model="product.socket" placeholder="Socket (e.g. LGA1200)" />
+      </div>
+
+      <div v-if="product.category === 'RAM' || product.category === 'Motherboard'">
+        <input v-model="product.ramType" placeholder="RAM Type (DDR4, DDR5)" />
+      </div>
+
+      <div v-if="product.category === 'CPU' || product.category === 'GPU'">
+        <input v-model.number="product.tdp" type="number" placeholder="TDP (W)" />
+      </div>
+
+      <div v-if="product.category === 'PSU'">
+        <input v-model.number="product.wattage" type="number" placeholder="Wattage (W)" />
+      </div>
+
       <button type="submit">
         {{ isEditMode ? 'Update Product' : 'Add Product' }}
       </button>
@@ -75,7 +92,11 @@ const product = ref({
   description: '',
   stock: 0,
   discount: 0,
-  image: ''
+  image: '',
+  socket: '',
+  ramType: '',
+  tdp: 0,
+  wattage: 0
 })
 
 const previewUrl = ref(null)
@@ -102,10 +123,8 @@ async function uploadFile(event) {
   const file = event.target.files[0]
   if (!file) return
 
-  // show preview immediately
   previewUrl.value = URL.createObjectURL(file)
 
-  // prepare FormData for backend
   const formData = new FormData()
   formData.append('file', file)
 
@@ -113,7 +132,6 @@ async function uploadFile(event) {
     const res = await api.post('/upload', formData, {
       headers: { 'Content-Type': 'multipart/form-data' }
     })
-    // backend returns: { url: '/uploads/filename.jpg' }
     product.value.image = res.data.url
 
   } catch (err) {
@@ -156,7 +174,7 @@ form {
   gap: 12px;
 }
 
-input, textarea, button {
+input, textarea, select, button {
   padding: 8px;
   font-size: 16px;
   border-radius: 4px;

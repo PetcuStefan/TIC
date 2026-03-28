@@ -83,7 +83,19 @@ router.get("/:id", async (req, res) => {
 
 // ADD PRODUCT (ADMIN)
 router.post("/", authenticateToken, requireAdmin, async (req, res) => {
-  const { name, price, category, description, image, stock, discount } = req.body;
+  const {
+    name,
+    price,
+    category,
+    description,
+    image,
+    stock,
+    discount,
+    socket,
+    ramType,
+    tdp,
+    wattage
+  } = req.body;
 
   if (!categories.includes(category)) {
     return res.status(400).send(`Invalid category. Must be one of: ${categories.join(", ")}`);
@@ -100,6 +112,12 @@ router.post("/", authenticateToken, requireAdmin, async (req, res) => {
     createdAt: new Date()
   };
 
+  // ✅ Add fields ONLY if they exist
+  if (socket) product.socket = socket;
+  if (ramType) product.ramType = ramType;
+  if (tdp) product.tdp = tdp;
+  if (wattage) product.wattage = wattage;
+
   const docRef = await db.collection("products").add(product);
   res.json({ id: docRef.id, message: "Product added successfully" });
 });
@@ -107,22 +125,30 @@ router.post("/", authenticateToken, requireAdmin, async (req, res) => {
 // UPDATE PRODUCT (ADMIN)
 router.put("/:id", authenticateToken, requireAdmin, async (req, res) => {
   try {
-    const productId = req.params.id
-    const data = req.body
+    const productId = req.params.id;
+    const data = req.body;
 
-    if (data.stock && data.stock < 0) {
-      return res.status(400).send("Stock cannot be negative")
+    if (data.stock !== undefined && data.stock < 0) {
+      return res.status(400).send("Stock cannot be negative");
     }
 
-    await db.collection("products").doc(productId).update(data)
+    if (data.tdp !== undefined && data.tdp < 0) {
+      return res.status(400).send("TDP cannot be negative");
+    }
 
-    res.send("Product updated successfully")
+    if (data.wattage !== undefined && data.wattage < 0) {
+      return res.status(400).send("Wattage cannot be negative");
+    }
+
+    await db.collection("products").doc(productId).update(data);
+
+    res.send("Product updated successfully");
 
   } catch (err) {
-    console.error(err)
-    res.status(500).send("Error updating product")
+    console.error(err);
+    res.status(500).send("Error updating product");
   }
-})
+});
 
 
 // DELETE PRODUCT (ADMIN)
