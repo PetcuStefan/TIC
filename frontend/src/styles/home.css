@@ -47,43 +47,43 @@
 }
 
 /* 🔴 Logout */
-.logout-btn {
-  background-color: #e53935;
+.home-container .actions .logout-btn {
+  background: #e53935;
 }
-.logout-btn:hover {
-  background-color: #c62828;
+.home-container .actions .logout-btn:hover {
+  background: #c62828;
 }
 
 /* 🔵 Build PC */
-.build-btn {
-  background-color: #1e88e5;
+.home-container .actions .build-btn {
+  background: #1e88e5;
 }
-.build-btn:hover {
-  background-color: #1565c0;
+.home-container .actions .build-btn:hover {
+  background: #1565c0;
 }
 
 /* 🟢 Cart */
-.cart-btn {
-  background-color: #43a047;
+.home-container .actions .cart-btn {
+  background: #43a047;
 }
-.cart-btn:hover {
-  background-color: #2e7d32;
+.home-container .actions .cart-btn:hover {
+  background: #2e7d32;
 }
 
 /* 🟣 Orders */
-.orders-btn {
-  background-color: #8e24aa;
+.home-container .actions .orders-btn {
+  background: #8e24aa;
 }
-.orders-btn:hover {
-  background-color: #6a1b9a;
+.home-container .actions .orders-btn:hover {
+  background: #6a1b9a;
 }
 
 /* 🟠 Add Product */
-.add-btn {
-  background-color: #fb8c00;
+.home-container .actions .add-btn {
+  background: #fb8c00;
 }
-.add-btn:hover {
-  background-color: #ef6c00;
+.home-container .actions .add-btn:hover {
+  background: #ef6c00;
 }
 
 /* PRODUCTS GRID */
