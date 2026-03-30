@@ -73,4 +73,6 @@ lib/
 .env
 /backend/serviceAccountKey.json
 /backend/uploads
+.firebaserc
+firebase.json
 
