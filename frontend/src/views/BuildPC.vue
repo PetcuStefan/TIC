@@ -1,6 +1,6 @@
 <template>
   <div class="build-pc-container">
-    <h1>🖥️ Build Your PC</h1>
+    <h1>Build Your PC</h1>
 
     <div class="dropdowns">
       <label>CPU</label>
@@ -54,8 +54,9 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue'
-import { useRouter } from 'vue-router'  // ✅ Import useRouter correctly
+import { useRouter } from 'vue-router'
 import api from '../services/api'
+import '../styles/buildPC.css'
 
 const router = useRouter()
 
@@ -151,46 +152,3 @@ function addToCart() {
   router.push('/')
 }
 </script>
-
-<style scoped>
-.build-pc-container {
-  max-width: 600px;
-  margin: 30px auto;
-  padding: 20px;
-  background: #f5f5f5;
-  border-radius: 10px;
-}
-
-.dropdowns {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-select {
-  padding: 8px;
-  font-size: 16px;
-}
-
-.total-price {
-  margin-top: 20px;
-  font-size: 18px;
-  font-weight: bold;
-}
-
-button {
-  margin-top: 15px;
-  padding: 10px;
-  font-size: 16px;
-  cursor: pointer;
-  background-color: #4caf50;
-  color: white;
-  border: none;
-  border-radius: 5px;
-}
-
-button:disabled {
-  background-color: #aaa;
-  cursor: not-allowed;
-}
-</style>

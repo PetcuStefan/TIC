@@ -14,12 +14,7 @@
   text-shadow: 1px 1px 2px rgba(0,0,0,0.05);
 }
 
-.home-container .products li {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
+/* ACTION BAR */
 .home-container .actions {
   display: flex;
   flex-wrap: wrap;
@@ -35,19 +30,63 @@
   border: 1px solid #ccc;
 }
 
+/* BASE BUTTON STYLE */
 .home-container .actions button {
   padding: 10px 15px;
   border: none;
-  border-radius: 5px;
+  border-radius: 6px;
   font-weight: bold;
   cursor: pointer;
   transition: all 0.2s ease;
+  color: white;
 }
 
+/* Keep transform globally */
 .home-container .actions button:hover {
   transform: scale(1.05);
 }
 
+/* 🔴 Logout */
+.logout-btn {
+  background-color: #e53935;
+}
+.logout-btn:hover {
+  background-color: #c62828;
+}
+
+/* 🔵 Build PC */
+.build-btn {
+  background-color: #1e88e5;
+}
+.build-btn:hover {
+  background-color: #1565c0;
+}
+
+/* 🟢 Cart */
+.cart-btn {
+  background-color: #43a047;
+}
+.cart-btn:hover {
+  background-color: #2e7d32;
+}
+
+/* 🟣 Orders */
+.orders-btn {
+  background-color: #8e24aa;
+}
+.orders-btn:hover {
+  background-color: #6a1b9a;
+}
+
+/* 🟠 Add Product */
+.add-btn {
+  background-color: #fb8c00;
+}
+.add-btn:hover {
+  background-color: #ef6c00;
+}
+
+/* PRODUCTS GRID */
 .home-container ul {
   list-style: none;
   padding: 0;
@@ -56,6 +95,7 @@
   gap: 15px;
 }
 
+/* PRODUCT CARD */
 .home-container li {
   background-color: #fff;
   padding: 12px;
@@ -74,11 +114,18 @@
   box-shadow: 0 4px 15px rgba(0,0,0,0.1);
 }
 
+/* PRODUCT IMAGE */
 .product-thumb {
   width: 80px;
   height: 80px;
   object-fit: contain;
-  margin-right: 10px;
-  vertical-align: middle;
+  margin-bottom: 10px;
   border-radius: 5px;
+}
+
+/* NO PRODUCTS MESSAGE */
+.no-products {
+  text-align: center;
+  margin-top: 20px;
+  color: #777;
 }

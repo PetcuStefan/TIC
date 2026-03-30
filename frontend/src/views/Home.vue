@@ -8,11 +8,11 @@
         <option v-for="cat in categories" :key="cat" :value="cat">{{ cat }}</option>
       </select>
 
-      <button @click="logout">Logout</button>
-      <button @click="goToBuildPC">Build a PC</button>
+      <button class="logout-btn" @click="logout">Logout</button>
+      <button class="build-btn" @click="goToBuildPC">Build a PC</button>
       <button class="cart-btn" @click="goToCart">View Cart</button>
       <button class="orders-btn" @click="goToOrders">View Orders</button>
-      <button v-if="isAdmin" @click="goToAddProduct">Add Product</button>
+      <button v-if="isAdmin" class="add-btn" @click="goToAddProduct">Add Product</button>
     </div>
 
     <ul class="products">
