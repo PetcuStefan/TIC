@@ -1,15 +1,23 @@
+// backend/routes/paymentRoutes.js
 const express = require('express')
 const router = express.Router()
 const Stripe = require('stripe')
 const stripe = Stripe(process.env.STRIPE_SECRET_KEY)
 const { db } = require('../firebase')
 
-// 1️⃣ Create Stripe Checkout session
+// Use environment variable for frontend URL (dev fallback to localhost)
+const CLIENT_URL = process.env.CLIENT_URL || 'http://localhost:5173'
+
+/**
+ * 1️⃣ Create Stripe Checkout session
+ * Expects: { items: [], userId, username }
+ * Returns: { url, sessionId }
+ */
 router.post('/checkout', async (req, res) => {
   try {
     const { items, userId, username } = req.body
     if (!items || !items.length || !userId || !username) {
-      return res.status(400).send('Invalid request')
+      return res.status(400).send('Invalid request: missing items or user info')
     }
 
     // Save cart items + user info in metadata
@@ -19,32 +27,37 @@ router.post('/checkout', async (req, res) => {
       username
     }
 
+    // Prepare line items for Stripe
     const line_items = items.map(item => ({
       price_data: {
         currency: 'usd',
         product_data: { name: item.name },
-        unit_amount: Math.round(item.price * 100)
+        unit_amount: Math.round(item.price * 100) // Stripe expects cents
       },
       quantity: item.quantity
     }))
 
+    // Create Stripe checkout session
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ['card'],
       mode: 'payment',
       line_items,
       metadata,
-      success_url: `${process.env.CLIENT_URL || 'http://localhost:5173'}/success?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${process.env.CLIENT_URL || 'http://localhost:5173'}/cart`
+      success_url: `${CLIENT_URL}/success?session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${CLIENT_URL}/cart`
     })
 
     res.json({ url: session.url, sessionId: session.id })
   } catch (err) {
-    console.error(err)
+    console.error('Stripe checkout creation failed:', err)
     res.status(500).send('Stripe checkout session failed')
   }
 })
 
-// 2️⃣ Confirm payment and create order + update stock
+/**
+ * 2️⃣ Confirm payment and create order + update stock
+ * Expects: { sessionId }
+ */
 router.post('/confirm', async (req, res) => {
   try {
     const { sessionId } = req.body
@@ -66,7 +79,7 @@ router.post('/confirm', async (req, res) => {
       return res.status(400).send('Missing user info in metadata')
     }
 
-    // Update stock and save order
+    // Update stock and save order in Firestore
     const batch = db.batch()
     for (const item of items) {
       const productRef = db.collection('products').doc(item.id)
@@ -74,7 +87,7 @@ router.post('/confirm', async (req, res) => {
       if (!productDoc.exists) continue
 
       const currentStock = productDoc.data().stock || 0
-      const newStock = currentStock - item.quantity
+      const newStock = Math.max(currentStock - item.quantity, 0)
       batch.update(productRef, { stock: newStock })
     }
 
@@ -92,7 +105,7 @@ router.post('/confirm', async (req, res) => {
 
     res.json({ message: 'Order created successfully!', orderId: orderRef.id })
   } catch (err) {
-    console.error(err)
+    console.error('Failed to confirm payment:', err)
     res.status(500).send('Failed to confirm payment')
   }
 })
